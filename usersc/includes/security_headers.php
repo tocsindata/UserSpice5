@@ -33,9 +33,11 @@ header("Strict-Transport-Security:max-age=31536000; includeSubdomains; preload")
 The x-frame-options header provides clickjacking protection by not allowing iframes to load on your site.
 helps prevent clickjacking by indicating to a browser that it should not render the page in a frame (or an iframe or object).
 */
-
+if(isset($turn_off_clickjack) && $turn_off_clickjack == 1) {
+    $null = '' ;
+} else {
 header("X-Frame-Options: SAMEORIGIN");
-
+}
 
 /*
 4. X-XSS-Protection
@@ -48,9 +50,11 @@ The reflected-xss directive configures the built in heuristics a user agent has 
     Block - Block reflected XSS attacks.
     Filter - Filter the reflected XSS attack.
 */
-
+if(isset($turn_off_clickjack) && $turn_off_clickjack == 1) {
+    $null = '' ;
+} else {
 header("X-XSS-Protection: 1; mode=block");
-
+}
 
 /*
 5. X-Content-Type-Options
@@ -59,8 +63,11 @@ The X-content-type header prevents Internet Explorer and Google Chrome from snif
 X-Content-Type-Options header instructs IE not to sniff mime types, preventing attacks related to mime-sniffing.
 */
 
+if(isset($turn_off_clickjack) && $turn_off_clickjack == 1) {
+    $null = '' ;
+} else {
 header("X-Content-Type-Options: nosniff");
-
+}
 
 /*
 6. The referrer directive specifies information for the referrer header in links away from the page.
@@ -71,9 +78,11 @@ header("X-Content-Type-Options: nosniff");
     Origin When Cross Origin - Allows the UA to only send the origin in the referrer header when making cross-origin requests.
     Unsafe URL - Allows the UA to send the full URL in the referrer header with same-origin and cross-origin requests. This is unsafe.
 */
-
+if(isset($turn_off_clickjack) && $turn_off_clickjack == 1) {
+    $null = '' ;
+} else {
 header("Referrer-Policy: no-referrer-when-downgrade");
-
+}
 
 // 7. There is no direct security risk, but exposing an outdated (and possibly vulnerable) version of PHP may be an invitation for people to try and attack it.
 
