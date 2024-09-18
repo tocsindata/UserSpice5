@@ -85,8 +85,11 @@ header("Referrer-Policy: no-referrer-when-downgrade");
 }
 
 // 7. There is no direct security risk, but exposing an outdated (and possibly vulnerable) version of PHP may be an invitation for people to try and attack it.
-
+if(isset($turn_off_clickjack) && $turn_off_clickjack == 1) {
+    $null = '' ;
+} else {
 header_remove("X-Powered-By");
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  ?>
