@@ -21,12 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'MISSING';
 if (!function_exists('ipCheck')) {
-  function ipCheck()
-  {
-    $ip = $_SERVER['REMOTE_ADDR'] ?? '';
-    return $ip;
+  function ipCheck() {
+    if (php_sapi_name() === 'cli') {
+      return '127.0.0.1'; // return HOME if run from cli or crontab
+    }
+    return $_SERVER['REMOTE_ADDR'] ?? '';
   }
 }
+
 
 if (!function_exists('ipCheckBan')) {
   function ipCheckBan()
