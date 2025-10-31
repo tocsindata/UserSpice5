@@ -20,10 +20,7 @@ else $pageTitle = '';
 
 <?php if(file_exists($abs_us_root.$us_url_root."usersc/includes/dashboard.css")){ ?>
   <link rel="stylesheet" href="<?=$us_url_root?>usersc/includes/dashboard.css">
-<?php } ?>
-</head>
-<body>
-<?php
+<?php } 
 
   $dirs = glob($abs_us_root.$us_url_root.'usersc/plugins/*' , GLOB_ONLYDIR);
   $plugins = [];
@@ -66,3 +63,4 @@ if(!function_exists('usView')){
 
 
   ?>
+
