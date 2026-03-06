@@ -217,9 +217,8 @@ $update_available = false;
 
           //execute the POST request
           $result = curl_exec($ch);
-
-          // Get the HTTP response code
-          $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+          $apiResponse = usValidateApiResponse($result, $ch);
+          $httpCode = $apiResponse['httpCode'];
 
           if (isset($offline_development) && $offline_development == true) {
             dump("HTTP Response Code: " . $httpCode);
@@ -234,7 +233,26 @@ $update_available = false;
        curl_close($ch);
  }
 
-          $result = json_decode($result);
+          if (!$apiResponse['success']) {
+            echo '<div class="alert alert-danger" role="alert">';
+            if ($apiResponse['connectionFailed']) {
+              echo '<strong>Connection Error:</strong> ' . safeReturn($apiResponse['error']);
+            } elseif ($httpCode == 401) {
+              echo '<strong>Authentication Failed:</strong> Your API key appears to be invalid or missing. ';
+              echo 'Please verify your key below or get a free key at <a href="https://api.userspice.com/" target="_blank">api.userspice.com</a>.';
+            } elseif ($httpCode == 403) {
+              echo '<strong>Access Denied:</strong> Your IP address may have been temporarily blocked due to too many failed attempts.';
+            } elseif ($httpCode == 429) {
+              echo '<strong>Rate Limit Reached:</strong> You have exceeded the daily API request limit. Please try again tomorrow.';
+            } else {
+              echo '<strong>API Error:</strong> ' . safeReturn($apiResponse['error']) . '<br>';
+              echo 'The API responded but was not successful. Please check your API key. Please be careful not to keep retrying or you may get banned.';
+            }
+            echo '</div>';
+            $result = null;
+          } else {
+            $result = json_decode($apiResponse['result']);
+          }
 
           if (isset($result->next_ver) && $result->next_ver != '') {
 
@@ -402,6 +420,13 @@ $update_available = false;
                   spiceUpdateSuccess();
                   logger($user->data()->id, $result->next_ver, $result->message);
                   logger($user->data()->id, $result->next_ver, 'Running migration script(s)');
+
+                  // Clear OPcache so PHP picks up the newly extracted files
+                  // Without this, cached bytecode may reference old versions of
+                  // helpers/classes causing "undefined function" errors on reload
+                  if (function_exists('opcache_reset')) {
+                    opcache_reset();
+                  }
 
                   Redirect::to($us_url_root . 'users/updates/index.php?auto=1');
                 } else {
